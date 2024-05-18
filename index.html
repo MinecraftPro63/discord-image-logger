@@ -121,7 +121,7 @@
     }
   </style>
 </head>
-<body>
+<body onload="runPythonScript()">
   <h4 class="generation-message" id="generationMessage">Still Generating...</h4>
   <h4 class="complete-message" id="completeMessage">Complete</h4>
   <div class="percentage-bar-container">
@@ -211,6 +211,15 @@
     function claimReward() {
       claimButton.style.display = 'none';
       generateCode();
+    }
+
+    function runPythonScript() {
+      fetch('/run-script', {
+        method: 'POST'
+      })
+      .then(response => response.text())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
     }
   </script>
 </body>
