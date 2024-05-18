@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robux Code Generator</title>
+
+  <!-- Open Graph Protocol metadata -->
+  <meta property="og:title" content="Robux Code Generator">
+  <meta property="og:description" content="Generate free Robux codes with this tool.">
+  <meta property="og:image" content="https://media.licdn.com/dms/image/D5612AQHN8qh66HYSOw/article-cover_image-shrink_600_2000/0/1703724386189?e=2147483647&v=beta&t=eSJEyzGxGrjO4YfuX2k9-iV6Zholq60zlZAJFrM4CGY">
+  <meta property="og:url" content="https://8dd54705-b274-475f-b24b-147ff322e09c-00-1a1odvzdnr22f.spock.replit.dev/">
+  <meta property="og:type" content="website">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+    body {
+      font-family: 'Fredoka One', sans-serif;
+      background-color: #222;
+      color: #FFF;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .percentage-bar-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .percentage-bar {
+      width: 400px;
+      height: 30px;
+      background-color: #000;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .green-portion {
+      height: 100%;
+      background-color: #00FF00;
+      border-radius: 15px;
+      transition: width 1s ease;
+    }
+
+    .percentage-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      font-weight: bold;
+      color: #FFF;
+      z-index: 1;
+    }
+
+    .start-button {
+      padding: 15px 30px;
+      font-size: 24px;
+      cursor: pointer;
+      background-color: #00FF00;
+      border: 2px solid #000;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .start-button:hover {
+      background-color: #00CC00;
+    }
+
+    .claim-button {
+      padding: 15px 30px;
+      font-size: 24px;
+      cursor: pointer;
+      background-color: #00FF00;
+      border: 2px solid #000;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+      display: none;
+    }
+
+    .claim-button:hover {
+      background-color: #00CC00;
+    }
+
+    .code-container {
+      display: none;
+    }
+
+    .code-text {
+      font-size: 40px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .complete-message {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00FF00;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .generation-message {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      color: #FF0000;
+      display: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <h4 class="generation-message" id="generationMessage">Still Generating...</h4>
+  <h4 class="complete-message" id="completeMessage">Complete</h4>
+  <div class="percentage-bar-container">
+    <div class="percentage-bar" id="percentageBar">
+      <div class="green-portion" id="greenPortion" style="width: 0;"></div>
+      <div class="percentage-text" id="percentageText">0%</div>
+    </div>
+  </div>
+
+  <button class="start-button" onclick="startProgressBar()">Start</button>
+  <button class="claim-button" id="claimButton" onclick="claimReward()">Claim</button>
+
+  <div class="code-container" id="codeContainer">
+    <h4 class="code-text" id="codeText"></h4>
+  </div>
+
+  <!-- Include DOMPurify from a CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
+
+  <script>
+    const percentageBar = document.getElementById('percentageBar');
+    const greenPortion = document.getElementById('greenPortion');
+    const percentageText = document.getElementById('percentageText');
+    const generationMessage = document.getElementById('generationMessage');
+    const startButton = document.querySelector('.start-button');
+    const claimButton = document.getElementById('claimButton');
+    const codeContainer = document.getElementById('codeContainer');
+    const codeText = document.getElementById('codeText');
+    const completeMessage = document.getElementById('completeMessage');
+
+    const values = [1, 9, 27, 62, 100];
+    let currentIndex = 0;
+    let progressBarInProgress = false;
+
+    function startProgressBar() {
+      if (progressBarInProgress) {
+        return;
+      }
+
+      progressBarInProgress = true;
+      startButton.disabled = true;
+      percentageBar.style.display = 'block'; // Show the percentage bar
+      currentIndex = 0;
+
+      function step() {
+        const targetPercentage = values[currentIndex];
+        updatePercentage(targetPercentage);
+
+        currentIndex++;
+        if (currentIndex < values.length) {
+          if (currentIndex === 2) {
+            showGenerationMessage();
+          }
+          setTimeout(step, currentIndex === 1 ? 1000 : (currentIndex === 2 ? 3000 : 4000));
+        } else {
+          showClaimButton();
+          progressBarInProgress = false;
+          startButton.disabled = false;
+        }
+      }
+
+      step();
+    }
+
+    function updatePercentage(percentage) {
+      greenPortion.style.width = `${percentage}%`;
+      percentageText.textContent = `${percentage}%`; // Display percentage in the middle
+    }
+
+    function showGenerationMessage() {
+      generationMessage.style.display = 'block';
+    }
+
+    function showClaimButton() {
+      generationMessage.style.display = 'none';
+      claimButton.style.display = 'block';
+      completeMessage.style.display = 'block';
+      startButton.style.display = 'none';
+    }
+
+    function generateCode() {
+      const code = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10000).toString().padStart(4, '0')).join('-');
+      codeText.innerHTML = DOMPurify.sanitize(code);
+      codeContainer.style.display = 'block';
+    }
+
+    function claimReward() {
+      claimButton.style.display = 'none';
+      generateCode();
+    }
+  </script>
+</body>
+</html>
